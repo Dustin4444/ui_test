@@ -87,12 +87,9 @@ fn build_dependencies_inner(
         }
     }
 
-    // Reusable closure for setting up the environment both for artifact generation and `cargo_metadata`
-    let set_locking = |cmd: &mut Command| {
-        if !info.bless_lockfile {
-            cmd.arg("--locked");
-        }
-    };
+    if !info.bless_lockfile {
+        build.arg("--locked");
+    }
 
     build.arg("--message-format=json");
 
@@ -242,7 +239,6 @@ fn build_dependencies_inner(
         .arg("--manifest-path")
         .arg(&info.crate_manifest_path);
     info.program.apply_env(&mut metadata);
-    set_locking(&mut metadata);
     let output = config.run_command(&mut metadata)?;
 
     if !output.status.success() {
